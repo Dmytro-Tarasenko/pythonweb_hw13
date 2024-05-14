@@ -22,13 +22,13 @@ urlpatterns = [
          views.ResetPasswordView.as_view(),
          name='password_reset'),
     path('reset-password/done/',
-         PasswordResetDoneView.as_view(template_name='users/password_reset_done.html'),
+         PasswordResetDoneView.as_view(template_name='users/password_reset_done.web_service'),
          name='password_reset_done'),
     path('reset-password/confirm/<uidb64>/<token>/',
-         PasswordResetConfirmView.as_view(template_name='users/password_reset_confirm.html',
+         PasswordResetConfirmView.as_view(template_name='users/password_reset_confirm.web_service',
                                           success_url='/reset-password/complete/'),
          name='password_reset_confirm'),
     path('reset-password/complete/',
-         PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'),
+         PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.web_service'),
          name='password_reset_complete')
 ]

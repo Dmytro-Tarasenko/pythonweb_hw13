@@ -22,7 +22,7 @@ def index(request):
                'href_name': quote.author.fullname.replace(' ', '_')}
               for quote in Quote.objects.all()]
     return render(request=request,
-                  template_name='app_quotes/index.html',
+                  template_name='app_quotes/index.web_service',
                   context={'quotes': quotes})
 
 
@@ -37,7 +37,7 @@ def authors(request):
                        )
                    )
     return render(request=request,
-                  template_name='app_quotes/authors.html',
+                  template_name='app_quotes/authors.web_service',
                   context={'authors': authors})
 
 
@@ -45,7 +45,7 @@ def author_name(request, name: str):
     name = name.replace('_', ' ')
     author = Author.objects.filter(fullname=name).first()
     return render(request=request,
-                  template_name='app_quotes/author_info.html',
+                  template_name='app_quotes/author_info.web_service',
                   context={'author': author})
 
 
@@ -53,7 +53,7 @@ def author_name(request, name: str):
 def add_author(request):
     if request.method == "GET":
         return render(request=request,
-                      template_name='app_quotes/addauthor.html',
+                      template_name='app_quotes/addauthor.web_service',
                       context={})
     try:
         born_date = datetime.strptime(request.POST['born-date'],
@@ -61,7 +61,7 @@ def add_author(request):
     except Exception as err:
         print(err)
         return render(request=request,
-                      template_name='app_quotes/addauthor.html',
+                      template_name='app_quotes/addauthor.web_service',
                       context={'msg': err})
     born_date_str = born_date.strftime("%B %d, %Y")
     new_author = Author(fullname=request.POST['fullname'],
@@ -71,7 +71,7 @@ def add_author(request):
     candidate = Author.objects.filter(fullname=new_author.fullname).first()
     if candidate:
         return render(request=request,
-                  template_name='app_quotes/addauthor.html',
+                  template_name='app_quotes/addauthor.web_service',
                   context={'msg':
                                f"Author {candidate.fullname} already exists"})
     new_author.save()
@@ -92,7 +92,7 @@ def add_quote(request):
 
     if request.method == "GET":
         return render(request=request,
-                      template_name='app_quotes/addquote.html',
+                      template_name='app_quotes/addquote.web_service',
                       context={'authors': authors_list})
     # POST handler
     if request.method == "POST":
@@ -115,7 +115,7 @@ def add_quote(request):
         if author_to_put is None:
             err = f"Author {author_post.replace('_', ' ')} not found"
             return render(request=request,
-                          template_name='app_quotes/addquote.html',
+                          template_name='app_quotes/addquote.web_service',
                           context={'authors': authors_list,
                                    'msg': err})
         new_quote = Quote(author=author_to_put,
@@ -132,7 +132,7 @@ def tags(request):
                                       .asc(nulls_last=True))
                  if tag.tag != ""]
     return render(request=request,
-                  template_name='app_quotes/tags.html',
+                  template_name='app_quotes/tags.web_service',
                   context={'tags': tags_list})
 
 
@@ -145,7 +145,7 @@ def quotes(request,
                'href_name': quote.author.fullname.replace(' ', '_')}
               for quote in res]
     return render(request=request,
-                  template_name='app_quotes/tagged-quotes.html',
+                  template_name='app_quotes/tagged-quotes.web_service',
                   context={'quotes': quotes,
                            'tag_name': tag})
 
@@ -159,7 +159,7 @@ def login(request):
         if user is None:
             print('user is None')
             return render(request=request,
-                          template_name='app_quotes/login.html',
+                          template_name='app_quotes/login.web_service',
                           context={'err': "Invalid credentials"})
         dj_login(request, user)
         next_url = request.POST['next']
@@ -169,7 +169,7 @@ def login(request):
     # GET method
     next_url = request.GET.get('next')
     return render(request=request,
-                  template_name='app_quotes/login.html',
+                  template_name='app_quotes/login.web_service',
                   context={'next_url': next_url})
 
 
@@ -178,7 +178,7 @@ def logout(request):
         dj_logout(request)
         return redirect('app_quotes:home')
     return render(request=request,
-                  template_name='app_quotes/index.html',
+                  template_name='app_quotes/index.web_service',
                   context={})
 
 
@@ -195,25 +195,25 @@ def register(request):
 
             except Exception as e:
                 return render(request=request,
-                              template_name='app_quotes/register.html',
+                              template_name='app_quotes/register.web_service',
                               context={'msg': f"User {data_['username']}"
                                               f" already exists."})
             user.save()
             return redirect('app_quotes:login')
 
         return render(request=request,
-                      template_name='app_quotes/register.html',
+                      template_name='app_quotes/register.web_service',
                       context={'msg': "Passwords do not match"})
 
     return render(request=request,
-                  template_name='app_quotes/register.html',
+                  template_name='app_quotes/register.web_service',
                    context={})
 
 
 class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
-    template_name = 'users/password_reset.html'
-    email_template_name = 'users/password_reset_email.html'
-    html_email_template_name = 'users/password_reset_email.html'
+    template_name = 'users/password_reset.web_service'
+    email_template_name = 'users/password_reset_email.web_service'
+    html_email_template_name = 'users/password_reset_email.web_service'
     success_url = reverse_lazy('app_quotes:password_reset_done')
     success_message = "An email with instructions to reset your password has been sent to %(email)s."
     subject_template_name = 'users/password_reset_subject.txt'

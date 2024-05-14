@@ -73,7 +73,7 @@ async def send_confirmation(
     fm = FastMail(conf)
     bg_task.add_task(fm.send_message,
                      message,
-                     template_name="confirmation.html")
+                     template_name="confirmation.web_service")
 
     return {"message": f"email has been sent to {email.email}"}
 
