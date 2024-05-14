@@ -1,6 +1,7 @@
+import re
+import json
 from contextlib import asynccontextmanager
 from pathlib import Path
-import re
 
 import uvicorn
 from fastapi import FastAPI, Request, Response
@@ -79,13 +80,17 @@ async def define_response(request: Request,
         #     ("response-type".encode(), response_type.encode())
         # )
     response = await call_next(request)
-    if response_type == "html":
+    content_type = response.headers.get('content-type')
+    content_json = re.match(r"application/json", content_type)
+    if all([response_type == "html",
+            content_json]):
         print(response_type)
         print(request.url.path, request.url.query)
+        print(response.headers)
         response_b = b""
         async for chunk in response.body_iterator:
             response_b += chunk
-        print(response_b.decode())
+        print(json.loads(response_b)['detail'])
         return Response(content=response_b,
                         status_code=response.status_code,
                         headers=dict(response.headers),
