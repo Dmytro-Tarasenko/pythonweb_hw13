@@ -16,10 +16,12 @@ from contacts.models import Contact, ContactResponse
 from users.orms import User
 from auth.service import Authentication
 
+
 router = APIRouter(prefix='/contacts',
                    tags=['contacts'])
 
 auth_service = Authentication()
+
 
 def get_field_names(model: "BaseModel") -> List[str]:
     """Return a list of field names for the model."""
