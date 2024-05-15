@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as redis
 from fastapi_limiter import FastAPILimiter
 from fastapi.staticfiles import StaticFiles
+from starlette.responses import HTMLResponse
 
 from contacts.routes import router
 from auth.routes import router as auth_router

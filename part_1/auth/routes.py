@@ -1,6 +1,7 @@
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
@@ -65,16 +66,16 @@ async def new_user(
              response_model=TokenResponse,
              dependencies=[Depends(RateLimiter(times=2, seconds=10))])
 async def login(
-        user: UserRequest,
+        user: Annotated[OAuth2PasswordRequestForm, Depends()],
         db: Annotated[Session, Depends(get_db)]
 ) -> Any:
-    user_db: User = db.query(User).filter(User.email == user.email).first()
+    user_db: User = db.query(User).filter(User.email == user.username).first()
     if not user_db:
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
             content={
                 "details": [
-                    {"msg": f"User with email: {user.email} not found"}
+                    {"msg": f"User with email: {user.username} not found"}
                 ]}
         )
 
@@ -87,18 +88,18 @@ async def login(
                 ]}
         )
 
-    if not user_db.email_confirmed:
-        return JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            content={
-                'details': [
-                    {"msg": "Email not confirmed."}
-                ]
-            }
-        )
+    # if not user_db.email_confirmed:
+    #     return JSONResponse(
+    #         status_code=status.HTTP_401_UNAUTHORIZED,
+    #         content={
+    #             'details': [
+    #                 {"msg": "Email not confirmed."}
+    #             ]
+    #         }
+    #     )
 
-    access_token = auth_service.create_access_token(user.email)
-    refresh_token = auth_service.create_refresh_token(user.email)
+    access_token = auth_service.create_access_token(user.username)
+    refresh_token = auth_service.create_refresh_token(user.username)
     user_db.loggedin = True
     db.commit()
     return JSONResponse(
