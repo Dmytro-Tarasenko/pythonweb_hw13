@@ -10,7 +10,7 @@ from fastapi_limiter import FastAPILimiter
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import HTMLResponse
 
-from contacts.routes import router
+from contacts.routes import router as contact_router
 from auth.routes import router as auth_router
 from email_service.routes import router as email_router
 from users.routes import router as users_router
@@ -37,6 +37,12 @@ static_path = Path(__file__).parent / 'web_service' / 'static'
 
 app.mount("/static", StaticFiles(directory=static_path), name='static')
 
+app.include_router(contact_router)
+app.include_router(auth_router)
+app.include_router(email_router)
+app.include_router(users_router)
+app.include_router(html_router)
+
 
 @app.middleware('http')
 async def call_define_response(request: Request,
@@ -44,11 +50,6 @@ async def call_define_response(request: Request,
     response = await middlewares.define_response(request, call_next)
     return response
 
-app.include_router(router)
-app.include_router(auth_router)
-app.include_router(email_router)
-app.include_router(users_router)
-app.include_router(html_router)
 
 origins = [
     "http://localhost:8080",
